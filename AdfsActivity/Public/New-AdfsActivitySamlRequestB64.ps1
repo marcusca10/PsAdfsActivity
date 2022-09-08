@@ -11,7 +11,7 @@ function New-AdfsActivitySamlRequestB64 {
     param (
         # Application identifier
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
-        [securestring] $Identifier
+        [string] $Identifier
     )
 
     $id = "id$((New-Guid).ToString() -replace '-','')"
