@@ -1,0 +1,22 @@
+PSTOPIC
+    about_AdfsActivity
+
+SHORT DESCRIPTION
+    AdfsActivity allows you to generate activity to AD FS servers withou using the browser.
+
+LONG DESCRIPTION
+    AdfsActivity allows you to generate activity to AD FS servers withou using the browser, if you installed Azure AD Connect Health agent for AD FS the activity will be visible in the portal.
+
+    More details about the Azure AD application activity report for AD FS here:
+        https://docs.microsoft.com/en-us/azure/active-directory/manage-apps/migrate-adfs-application-activity
+
+    Install Azure AD Connect Health agent for AD FS:
+        https://docs.microsoft.com/en-us/azure/active-directory/hybrid/how-to-connect-health-agent-install#install-the-agent-for-ad-fs
+
+
+DETAILED DESCRIPTION
+    This module logs users to AD FS server farms to similate user activity.
+    
+    You can create scheduled tasks to add activity to test farms and see it in the AD FS logs. If you installed the Azure Connect Health agent for AD FS this activity will also be available in the Azure AD portal.
+
+    If you plan to migrate application to Azure AD, the activity will make applications to be displayed in the Azure AD application activity report and help with details about the application migration (requires the Connect Health agent).
