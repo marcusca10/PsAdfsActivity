@@ -130,7 +130,7 @@ function Get-AdfsActivityToken
       Write-Host "Login sucessful for identifier ""$($Identifier)"" and user: $($user) (Ws-Trust)"
       return $login.Content
     }
-    else { Write-Warning "Login failed for user: $($user)" }
+    else { Write-Warning "Login failed for identifier ""$($Identifier)"" and user: $($user)" }
   }
   elseif ($login.InputFields[0].outerHTML.Contains("wsignin1.0")) {
     Write-Host "Login sucessful for identifier ""$($Identifier)"" and user: $($user) (Ws-Fed)"
