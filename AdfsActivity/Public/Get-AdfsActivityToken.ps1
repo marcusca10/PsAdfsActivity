@@ -60,20 +60,33 @@ function Get-AdfsActivityToken
   }
 
 
+  $login = $null
+  $loginFail = ""
+
   if ($Protocol -eq "WsTrust") {
     if ($null -ne $Credential) {
       $user = $Credential.UserName
       $uri = "https://$($AdfsHost)/adfs/services/trust/2005/usernamemixed"
 
       $wstrustRequest = New-AdfsActivityWsTrustRequest $Identifier -Endpoint $uri -Credential $Credential
-      $login = Invoke-WebRequest $uri -Method Post -Body $wstrustRequest -ContentType "application/soap+xml" -UseBasicParsing -ErrorAction SilentlyContinue
+      try{
+        $login = Invoke-WebRequest $uri -Method Post -Body $wstrustRequest -ContentType "application/soap+xml" -UseBasicParsing #-ErrorAction SilentlyContinue
+      }
+      catch [System.Net.WebException]{
+        $loginFail = $_
+      }
     }
     else {
       $uri = "https://$($AdfsHost)/adfs/services/trust/2005/windowstransport"
       $user = "$($env:USERDOMAIN)\$($env:UserName)"
 
       $wstrustRequest = New-AdfsActivityWsTrustRequest $Identifier -Endpoint $uri
-      $login = Invoke-WebRequest $uri -Method Post -Body $wstrustRequest -ContentType "application/soap+xml" -UseDefaultCredentials -UseBasicParsing -ErrorAction SilentlyContinue
+      try{
+        $login = Invoke-WebRequest $uri -Method Post -Body $wstrustRequest -ContentType "application/soap+xml" -UseDefaultCredentials -UseBasicParsing -ErrorAction SilentlyContinue
+      }
+      catch [System.Net.WebException]{
+        $loginFail = $_
+      }
     }
   }
   else {
@@ -89,19 +102,29 @@ function Get-AdfsActivityToken
     if ($null -ne $Credential) {
       $user = $Credential.UserName
       $form = Get-LoginFormFields -Url $uri -Credential $Credential
-      $login = Invoke-WebRequest -Uri $uri -Method POST -Body $form -UseBasicParsing -ErrorAction SilentlyContinue
+      try{
+        $login = Invoke-WebRequest -Uri $uri -Method POST -Body $form -UseBasicParsing -ErrorAction SilentlyContinue
+      }
+      catch [System.Net.WebException]{
+        $loginFail = $_
+      }
     }
     else {
       $userAgent = 'Mozilla/5.0 (compatible; MSIE 9.0; Windows NT; Windows NT 10.0; en-US)'
       $user = "$($env:USERDOMAIN)\$($env:UserName)"
-      $login = Invoke-WebRequest -Uri $uri -UserAgent $userAgent -UseDefaultCredentials -UseBasicParsing -ErrorAction SilentlyContinue
+      try{
+        $login = Invoke-WebRequest -Uri $uri -UserAgent $userAgent -UseDefaultCredentials -UseBasicParsing -ErrorAction SilentlyContinue
+      }
+      catch [System.Net.WebException]{
+        $loginFail = $_
+      }
     }
   }
 
 
 
-  if ($null -eq $login) { Write-Error "HTTP request failed for identifier ""$($identifier)"" and user: $($user)" }
-  elseif ($login.StatusCode -ne 200) { Write-Error "HTTP request failed with status $($login.StatusCode) for identifier ""$($identifier)"" and user: $($user)" }
+  if ($null -eq $login) { Write-Error "HTTP request failed for identifier ""$($identifier)"" and user: $($user). ERROR: $($loginFail)" }
+  elseif ($login.StatusCode -ne 200) { Write-Error "HTTP request failed for identifier ""$($identifier)"" and user: $($user). ERROR: HTTP status $($login.StatusCode)" }
   elseif ($login.InputFields.Count -le 0) {
     if ($login.Headers["Content-Type"].Contains("application/soap+xml")) {
       Write-Host "Login sucessful for identifier ""$($Identifier)"" and user: $($user) (Ws-Trust)"
