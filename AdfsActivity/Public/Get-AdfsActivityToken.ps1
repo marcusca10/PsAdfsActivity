@@ -28,7 +28,7 @@
     Get all SAML relying party trusts from the AD FS server and sign in using the logged user credentials.
 .EXAMPLE
     PS C:\>$WsFedIdentifiers = Get-AdfsRelyingPartyTrust | where { $_.WSFedEndpoint -ne $null -and $_.Identifier -notcontains "urn:federation:MicrosoftOnline" } | foreach { $_.Identifier.Item(0) }
-    PS C:\>$WsFedIdentifiers | foreach { Get-AdfsActivityToken $_ -AdfsHost sso.marcusca.net }
+    PS C:\>$WsFedIdentifiers | foreach { Get-AdfsActivityToken $_ -Protocol WsFed -AdfsHost sso.marcusca.net }
     Get all Ws-Fed relying party trusts from the AD FS server excluding Azure AD and sign in using the logged user credentials.
 #>
 function Get-AdfsActivityToken 
@@ -134,11 +134,11 @@ function Get-AdfsActivityToken
   }
   elseif ($login.InputFields[0].outerHTML.Contains("wsignin1.0")) {
     Write-Host "Login sucessful for identifier ""$($Identifier)"" and user: $($user) (Ws-Fed)"
-    return $login.Content
+    return $login.Content | Get-ParsedTokenFromResponse -Protocol WsFed
   }
   elseif ($login.InputFields[0].outerHTML.Contains("SAMLResponse")) {
     Write-Host "Login sucessful for identifier ""$($Identifier)"" and user: $($user) (SAML)"
-    return $login.Content
+    return $login.Content | Get-ParsedTokenFromResponse -Protocol SAML
   }
   else { Write-Warning "Login failed for identifier ""$($Identifier)"" and user: $($user)" }
 

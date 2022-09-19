@@ -26,5 +26,5 @@ function Get-LoginFormFields {
     $fields.Add("Password",$password)
     $fields.Add("AuthMethod","FormsAuthentication")
 
-    return $fields # $form.Fields
+    return $fields
 }
