@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    Initiates a logon request to and AD FS server to generate log activity.
+    Initiates a logon request to and AD FS server to generate log activity and returns the user token.
 .DESCRIPTION
     This command will acquire OAuth tokens for both public and confidential clients. Public clients authentication can be interactive, integrated Windows auth, or silent (aka refresh token authentication).
 .EXAMPLE
@@ -17,6 +17,10 @@
     PS C:\>$credential = Get-Credential
     PS C:\>Get-AdfsActivityToken urn:federation:MicrosoftOnline -AdfsHost adfs.contoso.com -Protocol WsFed
     Sign in  to an application on an AD FS server using credentials provided by the user using the Ws-Fed endpoint and forms based authentication.
+.EXAMPLE
+    PS C:\>$credential = Get-Credential
+    PS C:\>Get-AdfsActivityToken urn:federation:MicrosoftOnline -AdfsHost adfs.contoso.com -Protocol SAML
+    Sign in  to an application on an AD FS server using credentials provided by the user using the SAML endpoint and forms based authentication.
 .EXAMPLE
     PS C:\>$password = ConvertTo-SecureString "P@ssW0rD!" -AsPlainText -Force
     PS C:\>$credential = New-Object PSCredential ('user2@contoso.com', $password)

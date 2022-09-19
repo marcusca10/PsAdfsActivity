@@ -30,7 +30,8 @@ function Get-ParsedTokenFromResponse {
     else {
         # <input type="hidden" name="wresult" value="   ...   " />
         if($HttpResponse -match '<input type=\"hidden\" name=\"wresult\" value=\"(.+)\" \/><noscript>') {
-            $token = $Matches[1]
+            [Reflection.Assembly]::LoadWithPartialName('System.Web') | Out-Null
+            $token = [System.Web.HttpUtility]::HtmlDecode($Matches[1])
         }
     }
 
