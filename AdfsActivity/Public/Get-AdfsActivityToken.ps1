@@ -68,7 +68,7 @@ function Get-AdfsActivityToken
       $user = $Credential.UserName
       $uri = "https://$($AdfsHost)/adfs/services/trust/2005/usernamemixed"
 
-      $wstrustRequest = New-AdfsActivityWsTrustRequest $Identifier -Endpoint $uri -Credential $Credential
+      $wstrustRequest = New-AdfsActivityWsTrustRequest $Identifier -AdfsHost $AdfsHost -Credential $Credential
       try{
         $login = Invoke-WebRequest $uri -Method Post -Body $wstrustRequest -ContentType "application/soap+xml" -UseBasicParsing #-ErrorAction SilentlyContinue
       }
@@ -80,7 +80,7 @@ function Get-AdfsActivityToken
       $uri = "https://$($AdfsHost)/adfs/services/trust/2005/windowstransport"
       $user = "$($env:USERDOMAIN)\$($env:UserName)"
 
-      $wstrustRequest = New-AdfsActivityWsTrustRequest $Identifier -Endpoint $uri
+      $wstrustRequest = New-AdfsActivityWsTrustRequest $Identifier -AdfsHost $AdfsHost
       try{
         $login = Invoke-WebRequest $uri -Method Post -Body $wstrustRequest -ContentType "application/soap+xml" -UseDefaultCredentials -UseBasicParsing -ErrorAction SilentlyContinue
       }
